@@ -151,6 +151,8 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus {
         }
         s_requests[_requestId].fulfilled = true;
         s_requests[_requestId].randomWords = _randomWords;
+        // Random word shuffling requires discussion with teammates to handle situations with multiple random words.
+        // For now, we will only handle the case of one random word.
         s_shuffleWords[_requestId] = shuffle(s_minValueOfWord, s_maxValueOfWord, _randomWords[0]);
         emit RequestFulfilled(_requestId, _randomWords);
     }
