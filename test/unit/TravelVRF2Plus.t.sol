@@ -46,8 +46,6 @@ contract TravelVRF2PlusTest is Test {
             vrfCoordinator = address(1);
         }
 
-        // Deploy TravelVRF2Plus contract
-        console.log("Deploying TravelVRF2Plus contract...");
         travelVRF2Plus = new TravelVRFV2Plus(subscriptionId, vrfCoordinator, keyHash);
     }
 
@@ -73,6 +71,44 @@ contract TravelVRF2PlusTest is Test {
                 assertEq(true, numberOccurrences[word] == 0, "Duplicate word found");
                 numberOccurrences[word] += 1;
             }
+        }
+    }
+
+    function testRandomWordsGenerationWithinRange() public {
+        // seed = bound(seed, 100, 1e36); // limit the seed to a reasonable range
+        // require(seed >= 100 && seed <= 1e36);
+        (uint8 minNum, uint8 maxNum) = (1, 6);
+        uint256 size = 12;
+        for (uint256 i = 0; i < size; i++) {
+            uint256 seed = uint256(keccak256(abi.encodePacked(blockhash(i), i)));
+            console.log("Generating random words with seed %s", seed);
+            (uint256 init_state, uint8[] memory words) = travelVRF2Plus.generateNumbers(size, seed, minNum, maxNum);
+            console.log("Initial state: %s", init_state);
+            console.log("Generated %s words", words.length);
+            assertEq(words.length, size, "Invalid number of words generated");
+
+            for (uint256 index = 0; index < words.length; index++) {
+                uint256 word = words[index];
+                assertEq(true, word >= 1 && word <= 6, "Invalid word value");
+                console.log("Word %s: %s", index, word);
+            }
+        }
+    }
+
+    function testRandomWordsGenerationWithFuzzy(uint256 seed) public {
+        // seed = bound(seed, 100, 1e36); // limit the seed to a reasonable range
+        // require(seed >= 100 && seed <= 1e36);
+        (uint8 minNum, uint8 maxNum) = (1, 6);
+        uint256 size = 12;
+        (uint256 init_state, uint8[] memory words) = travelVRF2Plus.generateNumbers(size, seed, minNum, maxNum);
+        console.log("Initial state: %s", init_state);
+        console.log("Generated %s words", words.length);
+        assertEq(words.length, size, "Invalid number of words generated");
+
+        for (uint256 index = 0; index < words.length; index++) {
+            uint256 word = words[index];
+            assertEq(true, word >= 1 && word <= 6, "Invalid word value");
+            console.log("Word %s: %s", index, word);
         }
     }
 }
