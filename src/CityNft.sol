@@ -47,11 +47,7 @@ contract CityNft is ERC721 {
 
     // 这里的mint逻辑
     // tokencounter-ipfs地址的映射
-    function mintNft(
-        string memory countryName,
-        string memory cityName,
-        string memory nftAddress
-    ) public {
+    function mintNft(string memory countryName, string memory cityName, string memory nftAddress) public {
         uint256 tokenCounter = s_tokenCounter;
         _safeMint(msg.sender, tokenCounter);
         s_indexToNft[tokenCounter] = nftAddress;
@@ -73,17 +69,13 @@ contract CityNft is ERC721 {
         return "https://aquamarine-fascinating-grouse-888.mypinata.cloud/ipfs/";
     }
 
-
-
     /**
      *
      * @param tokenId tokenId
      */
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         //通过tokenid 获取到对应IPFS的路径 映射给前端展示
-        string memory imageURI = string.concat(_baseURI(),s_indexToNft[tokenId]); 
+        string memory imageURI = string.concat(_baseURI(), s_indexToNft[tokenId]);
         //pick city
         // if (CityNFTState.BEIJING == city) {
         //     if (s_userCityCount[msg.sender][city] != 0) {
@@ -103,26 +95,19 @@ contract CityNft is ERC721 {
         //     }
         // }
 
-        return
-            string(
-                abi.encodePacked(
-                        bytes(
-                            imageURI
-                        )   
-                )
-            );
+        return string(abi.encodePacked(bytes(imageURI)));
     }
 
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
     }
 
-    function getUserMintedCity(string memory countryName) public view returns (string[] memory cityNftUserHaveMint){
-             UserCity storage userCity =  s_userCountryNft[msg.sender][countryName];
-            return userCity.cityNftUserHaveMint;
+    function getUserMintedCity(string memory countryName) public view returns (string[] memory cityNftUserHaveMint) {
+        UserCity storage userCity = s_userCountryNft[msg.sender][countryName];
+        return userCity.cityNftUserHaveMint;
     }
 
-    function getUserPosition(string memory countryName) public view returns (string memory positonCity){
+    function getUserPosition(string memory countryName) public view returns (string memory positonCity) {
         return s_userCountryPosition[msg.sender][countryName];
     }
 }
