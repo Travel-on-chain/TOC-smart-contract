@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
 contract TravelRandomWordsUtil {
     error TravelRandomWords__InvalidRange(uint8 _minNum, uint8 _maxNum);
@@ -11,11 +11,12 @@ contract TravelRandomWordsUtil {
     uint256 private constant M = 2 ** 32; // 模数，保持不变
 
     // 生成 size 个随机数的函数
-    function generateNumbers(uint256 size, uint256 _seed, uint8 _minNum, uint8 _maxNum)
-        public
-        pure
-        returns (uint256 init_state, uint8[] memory randomNumbers)
-    {
+    function generateNumbers(
+        uint256 size,
+        uint256 _seed,
+        uint8 _minNum,
+        uint8 _maxNum
+    ) public pure returns (uint256 init_state, uint8[] memory randomNumbers) {
         if (_maxNum > 256 || _minNum >= _maxNum) {
             revert TravelRandomWords__InvalidRange(_minNum, _maxNum);
         }
@@ -43,7 +44,11 @@ contract TravelRandomWordsUtil {
      * @param size The size of the shuffled array. The maximum value of words is set by the s_maxValueOfWord variable.
      * @param entropy The entropy to use for the shuffle.
      */
-    function shuffle(uint256 start, uint256 size, uint256 entropy) public pure returns (uint256[] memory) {
+    function shuffle(
+        uint256 start,
+        uint256 size,
+        uint256 entropy
+    ) public pure returns (uint256[] memory) {
         uint256[] memory shuffled = new uint256[](size);
 
         // Initialize the shuffled array with the indices of the array.

@@ -22,7 +22,7 @@
 // internal & private view & pure functions
 // external & public view & pure functions
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
 import {IVRFCoordinatorV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol";
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
@@ -45,7 +45,12 @@ error TravelVRFV2Plus__CollaboratorNotExists();
 
 contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
     event RequestSent(uint256 indexed requestId, uint32 numWords);
-    event RequestFulfilled(uint256 indexed requestId, uint256 indexed initState, uint256[] randomWords, uint8[] dices);
+    event RequestFulfilled(
+        uint256 indexed requestId,
+        uint256 indexed initState,
+        uint256[] randomWords,
+        uint8[] dices
+    );
     event CollaboratorAdded(address indexed collaborator);
     event CollaboratorRemoved(address indexed collaborator);
 
@@ -94,7 +99,8 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
     // Cannot exceed VRFCoordinatorV2_5.MAX_NUM_WORDS. 	500
     uint32 private s_lastNumWords = 2;
 
-    mapping(uint256 => RequestStatus) private s_requests; /* requestId --> requestStatus */
+    mapping(uint256 => RequestStatus)
+        private s_requests; /* requestId --> requestStatus */
 
     // past requests Id.
     uint256[] private s_requestIds;
@@ -107,9 +113,11 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
     uint256 private s_minValueOfWord = 1;
     uint256 private s_maxValueOfWord = 6;
 
-    constructor(uint256 subscriptionId, address coordinatorAddr, bytes32 keyhash)
-        VRFConsumerBaseV2Plus(coordinatorAddr)
-    {
+    constructor(
+        uint256 subscriptionId,
+        address coordinatorAddr,
+        bytes32 keyhash
+    ) VRFConsumerBaseV2Plus(coordinatorAddr) {
         s_subscriptionId = subscriptionId;
         s_coordinatorAddr = coordinatorAddr;
         s_keyhash = keyhash;
@@ -117,11 +125,10 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
     }
 
     // Assumes the subscription is funded sufficiently.
-    function requestRandomWords(uint32 _numWords, bool _nativePayment)
-        external
-        onlyOwnerOrCollaborators
-        returns (uint256 requestId)
-    {
+    function requestRandomWords(
+        uint32 _numWords,
+        bool _nativePayment
+    ) external onlyOwnerOrCollaborators returns (uint256 requestId) {
         // Will revert if subscription is not set and funded.
         // To enable payment in native tokens, set nativePayment to true.
         if (_numWords > 500) {
@@ -135,11 +142,17 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
                 requestConfirmations: s_requestConfirmations,
                 callbackGasLimit: s_callbackGasLimit,
                 numWords: 1, // Only request one word at a time.
-                extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: _nativePayment}))
+                extraArgs: VRFV2PlusClient._argsToBytes(
+                    VRFV2PlusClient.ExtraArgsV1({nativePayment: _nativePayment})
+                )
             })
         );
-        s_requests[requestId] =
-            RequestStatus({randomWords: new uint256[](0), exists: true, fulfilled: false, dices: new uint8[](0)});
+        s_requests[requestId] = RequestStatus({
+            randomWords: new uint256[](0),
+            exists: true,
+            fulfilled: false,
+            dices: new uint8[](0)
+        });
         s_requestIds.push(requestId);
         s_lastRequestId = requestId;
         s_lastNumWords = _numWords;
@@ -147,7 +160,10 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
         return requestId;
     }
 
-    function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
+    function fulfillRandomWords(
+        uint256 _requestId,
+        uint256[] memory _randomWords
+    ) internal override {
         if (!s_requests[_requestId].exists) {
             revert TravelVRFV2Plus__NoRequestFound();
         }
@@ -156,8 +172,12 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
         // Random word shuffling requires discussion with teammates to handle situations with multiple random words.
         // For now, we will only handle the case of one random word.
         // s_shuffleWords[_requestId] = shuffle(s_minValueOfWord, s_maxValueOfWord, _randomWords[0]);
-        (uint256 init_state, uint8[] memory dices) =
-            generateNumbers(s_lastNumWords, _randomWords[0], uint8(s_minValueOfWord), uint8(s_maxValueOfWord));
+        (uint256 init_state, uint8[] memory dices) = generateNumbers(
+            s_lastNumWords,
+            _randomWords[0],
+            uint8(s_minValueOfWord),
+            uint8(s_maxValueOfWord)
+        );
         s_requests[_requestId].dices = dices;
         emit RequestFulfilled(_requestId, init_state, _randomWords, dices);
     }
@@ -166,11 +186,15 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
 
     /* SETTER */
 
-    function setRequestConfirmations(uint16 _requestConfirmations) external onlyOwnerOrCollaborators {
+    function setRequestConfirmations(
+        uint16 _requestConfirmations
+    ) external onlyOwnerOrCollaborators {
         s_requestConfirmations = _requestConfirmations;
     }
 
-    function setCallbackGasLimit(uint32 _callbackGasLimit) external onlyOwnerOrCollaborators {
+    function setCallbackGasLimit(
+        uint32 _callbackGasLimit
+    ) external onlyOwnerOrCollaborators {
         s_callbackGasLimit = _callbackGasLimit;
     }
 
@@ -179,7 +203,10 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
      * @param min The minimum value of the shuffled words.
      * @param max The maximum value of the shuffled words.
      */
-    function setValueRangeOfWord(uint256 min, uint256 max) external onlyOwnerOrCollaborators {
+    function setValueRangeOfWord(
+        uint256 min,
+        uint256 max
+    ) external onlyOwnerOrCollaborators {
         if (min != s_minValueOfWord) {
             s_minValueOfWord = min;
         }
@@ -190,10 +217,16 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
 
     /* GETTER */
 
-    function getRequestStatus(uint256 _requestId)
+    function getRequestStatus(
+        uint256 _requestId
+    )
         external
         view
-        returns (bool fulfilled, uint256[] memory randomWords, uint8[] memory dices)
+        returns (
+            bool fulfilled,
+            uint256[] memory randomWords,
+            uint8[] memory dices
+        )
     {
         if (!s_requests[_requestId].exists) {
             revert TravelVRFV2Plus__NoRequestFound();
@@ -222,13 +255,19 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
         return s_lastNumWords;
     }
 
-    function getValueRangeOfWord() external view returns (uint256 min, uint256 max) {
+    function getValueRangeOfWord()
+        external
+        view
+        returns (uint256 min, uint256 max)
+    {
         return (s_minValueOfWord, s_maxValueOfWord);
     }
 
     /* Collaborators */
 
-    function addCollaborator(address _collaborator) external onlyOwnerOrCollaborators {
+    function addCollaborator(
+        address _collaborator
+    ) external onlyOwnerOrCollaborators {
         if (s_collaborators[_collaborator]) {
             revert TravelVRFV2Plus__CollaboratorExists();
         }
@@ -236,7 +275,9 @@ contract TravelVRFV2Plus is VRFConsumerBaseV2Plus, TravelRandomWordsUtil {
         emit CollaboratorAdded(_collaborator);
     }
 
-    function removeCollaborator(address _collaborator) external onlyOwnerOrCollaborators {
+    function removeCollaborator(
+        address _collaborator
+    ) external onlyOwnerOrCollaborators {
         if (!s_collaborators[_collaborator]) {
             revert TravelVRFV2Plus__CollaboratorNotExists();
         }

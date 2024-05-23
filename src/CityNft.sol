@@ -21,16 +21,19 @@
 // external & public view & pure functions
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 struct UserCity {
     string[] cityNftUserHaveMint;
 }
 
-contract CityNft is ERC721 {
+contract CityNft is ERC721, Initializable, UUPSUpgradeable {
     uint256 private s_cityIndex;
     uint256 private s_tokenCounter;
 
@@ -73,7 +76,12 @@ contract CityNft is ERC721 {
         return "https://aquamarine-fascinating-grouse-888.mypinata.cloud/ipfs/";
     }
 
+    function initialize() public initializer {
+        //__Ownable_init();
+        __UUPSUpgradeable_init();
+    }
 
+    function _authorizeUpgrade(address newImplementation) internal override {}
 
     /**
      *
@@ -83,7 +91,10 @@ contract CityNft is ERC721 {
         uint256 tokenId
     ) public view override returns (string memory) {
         //通过tokenid 获取到对应IPFS的路径 映射给前端展示
-        string memory imageURI = string.concat(_baseURI(),s_indexToNft[tokenId]); 
+        string memory imageURI = string.concat(
+            _baseURI(),
+            s_indexToNft[tokenId]
+        );
         //pick city
         // if (CityNFTState.BEIJING == city) {
         //     if (s_userCityCount[msg.sender][city] != 0) {
@@ -103,26 +114,23 @@ contract CityNft is ERC721 {
         //     }
         // }
 
-        return
-            string(
-                abi.encodePacked(
-                        bytes(
-                            imageURI
-                        )   
-                )
-            );
+        return string(abi.encodePacked(bytes(imageURI)));
     }
 
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
     }
 
-    function getUserMintedCity(string memory countryName) public view returns (string[] memory cityNftUserHaveMint){
-             UserCity storage userCity =  s_userCountryNft[msg.sender][countryName];
-            return userCity.cityNftUserHaveMint;
+    function getUserMintedCity(
+        string memory countryName
+    ) public view returns (string[] memory cityNftUserHaveMint) {
+        UserCity storage userCity = s_userCountryNft[msg.sender][countryName];
+        return userCity.cityNftUserHaveMint;
     }
 
-    function getUserPosition(string memory countryName) public view returns (string memory positonCity){
+    function getUserPosition(
+        string memory countryName
+    ) public view returns (string memory positonCity) {
         return s_userCountryPosition[msg.sender][countryName];
     }
 }
