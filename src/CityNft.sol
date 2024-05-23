@@ -50,11 +50,7 @@ contract CityNft is ERC721, Initializable, UUPSUpgradeable {
 
     // 这里的mint逻辑
     // tokencounter-ipfs地址的映射
-    function mintNft(
-        string memory countryName,
-        string memory cityName,
-        string memory nftAddress
-    ) public {
+    function mintNft(string memory countryName, string memory cityName, string memory nftAddress) public {
         uint256 tokenCounter = s_tokenCounter;
         _safeMint(msg.sender, tokenCounter);
         s_indexToNft[tokenCounter] = nftAddress;
@@ -87,9 +83,7 @@ contract CityNft is ERC721, Initializable, UUPSUpgradeable {
      *
      * @param tokenId tokenId
      */
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         //通过tokenid 获取到对应IPFS的路径 映射给前端展示
         string memory imageURI = string.concat(
             _baseURI(),
@@ -114,6 +108,7 @@ contract CityNft is ERC721, Initializable, UUPSUpgradeable {
         //     }
         // }
 
+        return string(abi.encodePacked(bytes(imageURI)));
         return string(abi.encodePacked(bytes(imageURI)));
     }
 
