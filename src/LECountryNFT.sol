@@ -28,7 +28,7 @@ contract LECountryNFT is ERC721, Ownable {
     mapping(uint256 nftIndex => string nftAddress) private s_indexToNft;
     mapping(string => uint16) private s_maxSupplyCountryNFT;
     mapping(string => uint16) private s_numCountryNFT;
-    mapping(address user => string[]) s_userCountriesNft;
+    mapping(address user => string[]) private s_userCountriesNft;
 
     constructor(
         string[] memory _countries,
@@ -55,6 +55,7 @@ contract LECountryNFT is ERC721, Ownable {
 
     // Need to update the following functions:
     function mintNft(
+        address to,
         string memory _countryName,
         string memory _nftAddress
     ) public OnlyOwnerOrCollaborators {
@@ -75,18 +76,18 @@ contract LECountryNFT is ERC721, Ownable {
         }
 
         s_numCountryNFT[_countryName]++;
-        _safeMint(msg.sender, tokenCounter);
+        _safeMint(to, tokenCounter);
 
         s_indexToNft[tokenCounter] = _nftAddress;
         s_tokenCounter++;
 
         // 更新用户已拥有的国家 NFT
-        string[] storage userCountries = s_userCountriesNft[msg.sender];
+        string[] storage userCountries = s_userCountriesNft[to];
         userCountries.push(_countryName);
 
         emit LECountryNFT__NFTMinted(
             tokenCounter,
-            msg.sender,
+            to,
             _countryName,
             s_numCountryNFT[_countryName]
         );
@@ -112,12 +113,16 @@ contract LECountryNFT is ERC721, Ownable {
         return s_tokenCounter;
     }
 
-    function getUserMintedCountries()
-        public
-        view
-        returns (string[] memory countriesNftUserHave)
-    {
-        return s_userCountriesNft[msg.sender];
+    function getNumCountryNFT(
+        string memory _country
+    ) public view returns (uint16 minted, uint16 maxSupply) {
+        return (s_numCountryNFT[_country], s_maxSupplyCountryNFT[_country]);
+    }
+
+    function getUserMintedCountries(
+        address _user
+    ) public view returns (string[] memory countriesNftUserHave) {
+        return s_userCountriesNft[_user];
     }
 
     function getCountries()
