@@ -1,5 +1,7 @@
-@solmate=lib/solmate/src/
 @std=lib/forge-std/src/
+@solmate=lib/solmate/src/
+@devops/=lib/foundry-devops/
 @chainlink/=lib/chainlink-brownie-contracts/
-@openzeppelin/contracts=lib/openzeppelin-contracts/contracts
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
 forge-std/=lib/forge-std/src/

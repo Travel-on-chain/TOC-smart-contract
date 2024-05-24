@@ -21,16 +21,19 @@
 // external & public view & pure functions
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 struct UserCity {
     string[] cityNftUserHaveMint;
 }
 
-contract CityNft is ERC721 {
+contract CityNft is ERC721, Initializable, UUPSUpgradeable {
     uint256 private s_cityIndex;
     uint256 private s_tokenCounter;
 
@@ -68,6 +71,13 @@ contract CityNft is ERC721 {
     function _baseURI() internal pure override returns (string memory) {
         return "https://aquamarine-fascinating-grouse-888.mypinata.cloud/ipfs/";
     }
+
+    function initialize() public initializer {
+        //__Ownable_init();
+        __UUPSUpgradeable_init();
+    }
+
+    function _authorizeUpgrade(address newImplementation) internal override {}
 
     /**
      *
