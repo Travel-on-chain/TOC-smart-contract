@@ -8,17 +8,11 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract LECountryNFT is ERC721, Ownable {
     error LECountryNFT__InvalidCountry(string country);
-    error LECountryNFT__MaximumQuantityReached(
-        string country,
-        uint16 maxSupply
-    );
+    error LECountryNFT__MaximumQuantityReached(string country, uint16 maxSupply);
     error LECountryNFT__OnlyOwnerOrCollateralOwner(address _opeartor);
 
     event LECountryNFT__NFTMinted(
-        uint256 indexed tokenId,
-        address indexed owner,
-        string indexed countryName,
-        uint16 holderRank
+        uint256 indexed tokenId, address indexed owner, string indexed countryName, uint16 holderRank
     );
 
     uint256 private s_tokenCounter;
@@ -30,19 +24,17 @@ contract LECountryNFT is ERC721, Ownable {
     mapping(string => uint16) private s_numCountryNFT;
     mapping(address user => string[]) private s_userCountriesNft;
 
-    constructor(
-        string[] memory _countries,
-        uint16 _defaultMaxSupply
-    ) ERC721("Limited Edition Country NFT", "LECTNFT") Ownable(msg.sender) {
+    constructor(string[] memory _countries, uint16 _defaultMaxSupply)
+        ERC721("Limited Edition Country NFT", "LECTNFT")
+        Ownable()
+    {
         s_tokenCounter = 0;
         s_countries = _countries;
         s_defaultMaxSupply = _defaultMaxSupply;
         setCountriesMaxSupply(_countries, _defaultMaxSupply);
     }
 
-    function isValidCountry(
-        string memory _countryName
-    ) private view returns (bool valid) {
+    function isValidCountry(string memory _countryName) private view returns (bool valid) {
         string[] memory countries = s_countries;
         for (uint256 i = 0; i < countries.length; i++) {
             bytes32 countriesHash = keccak256(abi.encodePacked(countries[i]));
@@ -54,11 +46,10 @@ contract LECountryNFT is ERC721, Ownable {
     }
 
     // Need to update the following functions:
-    function mintNft(
-        address to,
-        string memory _countryName,
-        string memory _nftAddress
-    ) public OnlyOwnerOrCollaborators {
+    function mintNft(address to, string memory _countryName, string memory _nftAddress)
+        public
+        OnlyOwnerOrCollaborators
+    {
         if (!isValidCountry(_countryName)) {
             revert LECountryNFT__InvalidCountry(_countryName);
         }
@@ -66,13 +57,8 @@ contract LECountryNFT is ERC721, Ownable {
         uint256 tokenCounter = s_tokenCounter;
 
         // Limit the number of NFTs to mint
-        if (
-            s_numCountryNFT[_countryName] >= s_maxSupplyCountryNFT[_countryName]
-        ) {
-            revert LECountryNFT__MaximumQuantityReached(
-                _countryName,
-                s_maxSupplyCountryNFT[_countryName]
-            );
+        if (s_numCountryNFT[_countryName] >= s_maxSupplyCountryNFT[_countryName]) {
+            revert LECountryNFT__MaximumQuantityReached(_countryName, s_maxSupplyCountryNFT[_countryName]);
         }
 
         s_numCountryNFT[_countryName]++;
@@ -85,26 +71,16 @@ contract LECountryNFT is ERC721, Ownable {
         string[] storage userCountries = s_userCountriesNft[to];
         userCountries.push(_countryName);
 
-        emit LECountryNFT__NFTMinted(
-            tokenCounter,
-            to,
-            _countryName,
-            s_numCountryNFT[_countryName]
-        );
+        emit LECountryNFT__NFTMinted(tokenCounter, to, _countryName, s_numCountryNFT[_countryName]);
     }
 
     function _baseURI() internal pure override returns (string memory) {
         return "https://aquamarine-fascinating-grouse-888.mypinata.cloud/ipfs/";
     }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         //通过 tokenid 获取到对应 IPFS 的路径 映射给前端展示
-        string memory imageURI = string.concat(
-            _baseURI(),
-            s_indexToNft[tokenId]
-        );
+        string memory imageURI = string.concat(_baseURI(), s_indexToNft[tokenId]);
         return string(abi.encodePacked(bytes(imageURI)));
     }
 
@@ -113,44 +89,28 @@ contract LECountryNFT is ERC721, Ownable {
         return s_tokenCounter;
     }
 
-    function getNumCountryNFT(
-        string memory _country
-    ) public view returns (uint16 minted, uint16 maxSupply) {
+    function getNumCountryNFT(string memory _country) public view returns (uint16 minted, uint16 maxSupply) {
         return (s_numCountryNFT[_country], s_maxSupplyCountryNFT[_country]);
     }
 
-    function getUserMintedCountries(
-        address _user
-    ) public view returns (string[] memory countriesNftUserHave) {
+    function getUserMintedCountries(address _user) public view returns (string[] memory countriesNftUserHave) {
         return s_userCountriesNft[_user];
     }
 
-    function getCountries()
-        public
-        view
-        OnlyOwnerOrCollaborators
-        returns (string[] memory countries)
-    {
+    function getCountries() public view OnlyOwnerOrCollaborators returns (string[] memory countries) {
         return s_countries;
     }
 
     /* SETTER */
-    function setCountries(
-        string[] memory _countries
-    ) public OnlyOwnerOrCollaborators {
+    function setCountries(string[] memory _countries) public OnlyOwnerOrCollaborators {
         s_countries = _countries;
     }
 
-    function setCountriesMaxSupply(
-        string[] memory _countries,
-        uint16 _maxSupply
-    ) public OnlyOwnerOrCollaborators {
+    function setCountriesMaxSupply(string[] memory _countries, uint16 _maxSupply) public OnlyOwnerOrCollaborators {
         if (_countries.length > s_countries.length) {
-            revert LECountryNFT__InvalidCountry(
-                "New countries length is out of range"
-            );
+            revert LECountryNFT__InvalidCountry("New countries length is out of range");
         }
-        for (uint i = 0; i < _countries.length; i++) {
+        for (uint256 i = 0; i < _countries.length; i++) {
             if (!isValidCountry(_countries[i])) {
                 revert LECountryNFT__InvalidCountry(_countries[i]);
             }
