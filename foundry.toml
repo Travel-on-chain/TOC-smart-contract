@@ -2,12 +2,18 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-remappings = [
-    '@chainlink/=lib/chainlink-brownie-contracts/',
-    '@openzeppelin/contracts=lib/openzeppelin-contracts/contracts',
-    '@openzeppelin/contracts-upgradeable=lib/openzeppelin-contracts-upgradeable/contracts',
-]
+# remappings is replaced by remappings.txt, please refer to the file for more information
+# remappings = [
+#     '@chainlink/=lib/chainlink-brownie-contracts/',
+#     '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts',
+#     '@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts',
+# ]
 ffi = true
+
+#gas_reports = ["*"]
+optimizer = true
+optimizer_runs = 20000
+solc_version = "0.8.24"
 
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
