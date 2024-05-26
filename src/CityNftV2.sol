@@ -33,10 +33,10 @@ struct UserCity {
     string[] cityNftUserHaveMint;
 }
 
-contract CityNft is ERC721, Initializable, UUPSUpgradeable {
+contract CityNftV2 is ERC721, Initializable, UUPSUpgradeable {
     uint256 private s_cityIndex;
     uint256 private s_tokenCounter;
-
+    
     //new state
     mapping(uint256 cityIndex => string nftAddress) private s_indexToNft;
     mapping(address user => mapping(string country => string nowPosition)) s_userCountryPosition;
@@ -73,11 +73,11 @@ contract CityNft is ERC721, Initializable, UUPSUpgradeable {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://aquamarine-fascinating-grouse-888.mypinata.cloud/ipfs/";
+        return "https://new_version.mypinata.cloud/ipfs/";
     }
 
     function initialize() public initializer {
-        // __Ownable_init();
+        //__Ownable_init();
         __UUPSUpgradeable_init();
     }
 
@@ -113,6 +113,7 @@ contract CityNft is ERC721, Initializable, UUPSUpgradeable {
         //         cityLevel = 0;
         //     }
         // }
+
         return string(abi.encodePacked(bytes(imageURI)));
     }
 
@@ -134,6 +135,6 @@ contract CityNft is ERC721, Initializable, UUPSUpgradeable {
     }
 
     function version() public view returns (uint version) {
-        version = 1;
+        version = 2;
     }
 }

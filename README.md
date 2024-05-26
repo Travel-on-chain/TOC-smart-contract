@@ -24,3 +24,11 @@ make build
 ```shell
 make test
 ```
+
+# Start[local-env]:
+
+# Step1 for local 
+make deploy-anvil
+# Strp2 for local
+make upgrade
+
