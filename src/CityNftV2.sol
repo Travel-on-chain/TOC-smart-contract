@@ -36,7 +36,7 @@ struct UserCity {
 contract CityNftV2 is ERC721, Initializable, UUPSUpgradeable {
     uint256 private s_cityIndex;
     uint256 private s_tokenCounter;
-    
+
     //new state
     mapping(uint256 cityIndex => string nftAddress) private s_indexToNft;
     mapping(address user => mapping(string country => string nowPosition)) s_userCountryPosition;
@@ -135,6 +135,6 @@ contract CityNftV2 is ERC721, Initializable, UUPSUpgradeable {
     }
 
     function version() public view returns (uint version) {
-        version = 2;
+        version = 3;
     }
 }

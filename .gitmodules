@@ -4,9 +4,9 @@
 [submodule "lib/solmate"]
 	path = lib/solmate
 	url = https://github.com/rari-capital/solmate
-[submodule "lib/openzeppelin-contracts-upgradable"]
-	path = lib/openzeppelin-contracts-upgradable
-	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradable
+# [submodule "lib/openzeppelin-contracts-upgradable"]
+# 	path = lib/openzeppelin-contracts-upgradable
+# 	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradable
 [submodule "lib/foundry-devops"]
 	path = lib/foundry-devops
 	url = https://github.com/Cyfrin/foundry-devops
