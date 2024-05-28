@@ -145,6 +145,8 @@ contract LECountryNFTTest is Test {
         uint16 maxSupply = leINFO.maxSupply;
         uint16 excessiveAmount = 20;
         string memory nftCountryAddress = leINFO.countries[0];
+
+        // mint
         for (uint16 i = 0; i < maxSupply; i++) {
             vm.expectEmit(true, true, true, true);
             emit LECountryNFT__NFTMinted(i, USER, nftCountryAddress, i + 1);
@@ -155,6 +157,7 @@ contract LECountryNFTTest is Test {
         assertEq(maxSupply, maxSupplySetting);
         assertEq(maxSupply, numNFTMinted);
 
+        // cannot mint due to insufficient mint quantity
         for (uint i = 0; i < excessiveAmount; i++) {
             vm.expectRevert(
                 abi.encodeWithSelector(
@@ -172,11 +175,44 @@ contract LECountryNFTTest is Test {
     // Need to update.
     string[] private countriesNeedModify;
 
-    function testMAXMintedThenIncreaseLimition() private maxMintedThen(USER) {
-        countriesNeedModify.push("Shanghai");
+    function concatListToString(
+        string[] memory _list
+    ) private pure returns (string memory result) {
+        bytes memory _result = bytes("");
+        for (uint i = 0; i < _list.length; i++) {
+            _result = abi.encodePacked(_result, ",", _list[i]);
+        }
+        return string(_result);
+    }
+
+    function testMAXMintedThenIncreaseLimition() public maxMintedThen(USER) {
+        // clear the countriesNeedModify and then add countries
+        delete countriesNeedModify;
+        string memory countryName = "Shanghai";
+        countriesNeedModify.push(countryName);
+        console.log(concatListToString(countriesNeedModify)); // log the actual content of countriesNeedModify
+
+        // set new MAXSupply
+        uint16 newAddedQuantity = 20;
         leCountryNFT.setCountriesMaxSupply(
             countriesNeedModify,
-            leINFO.maxSupply + 20
+            leINFO.maxSupply + newAddedQuantity
         );
+
+        // mint
+        for (uint16 i = 0; i < newAddedQuantity - 2; i++) {
+            vm.expectEmit(true, true, true, true);
+            emit LECountryNFT__NFTMinted(
+                leINFO.maxSupply + i,
+                USER,
+                countryName,
+                leINFO.maxSupply + i + 1
+            );
+            leCountryNFT.mintNft(USER, countryName, countryName);
+        }
+        (uint16 numNFTMinted, uint16 maxSupplySetting) = leCountryNFT
+            .getNumCountryNFT(countryName);
+        assertEq(leINFO.maxSupply + newAddedQuantity, maxSupplySetting);
+        assertEq(leINFO.maxSupply + newAddedQuantity - 2, numNFTMinted);
     }
 }
