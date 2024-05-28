@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.19;
 
-import {DeployBox} from "../../script/DeployBox.s.sol";
-import {UpgradeBox} from "../../script/UpgradeBox.s.sol";
+import {DeployBox} from "../script/DeployBox.s.sol";
+import {UpgradeBox} from "../script/UpgradeBox.s.sol";
 import {Test, console} from "forge-std/Test.sol";
 import {StdCheats} from "forge-std/StdCheats.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import {CityNft} from "../../src/CityNft.sol";
-import {CityNftV2} from "../../src/CityNftV2.sol";
+import {CityNft} from "../src/CityNft.sol";
+import {CityNftV2} from "../src/CityNftV2.sol";
 
 contract DeployAndUpgradeTest is StdCheats, Test {
     DeployBox public deployBox;
