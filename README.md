@@ -25,10 +25,16 @@ make build
 make test
 ```
 
-# Start[local-env]:
+## Start local testing
 
-# Step1 for local 
-make deploy-anvil
-# Strp2 for local
-make upgrade
+1. Step1 
 
+    ```shell
+    make deploy-anvil
+    ```
+
+2. Step2 
+
+    ```shell
+    make upgrade
+    ```
