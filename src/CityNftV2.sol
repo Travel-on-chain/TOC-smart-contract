@@ -135,6 +135,6 @@ contract CityNftV2 is ERC721, Initializable, UUPSUpgradeable {
     }
 
     function version() public view returns (uint version) {
-        version = 3;
+        version = 2;
     }
 }
